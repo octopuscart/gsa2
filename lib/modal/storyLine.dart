@@ -1,22 +1,40 @@
 class StoryLine {
-  final String? language_id;
+  final String id;
+  final String image;
+  final String display_index;
+  final String content;
+  final String local_path;
 
   StoryLine({
-    this.language_id,
+    required this.id,
+    required this.image,
+    required this.display_index,
+    required this.content,
+    required this.local_path,
   });
 
-  StoryLine.fromMap(Map<String, dynamic> res)
-      : language_id = res["language_id"];
-
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toMap() {
     return {
-      'language_id': language_id,
+      'id': id,
+      'image': image,
+      'display_index': display_index,
+      'content': content,
+      'local_path': local_path,
     };
   }
 
-  factory StoryLine.fromJson(Map<String, dynamic> json) {
-    return StoryLine(
-      language_id: json["language_id"],
-    );
+  Future<List<Dog>> storyByLanguage() async {
+    // Get a reference to the database.
+    // Query the table for all The Dogs.
+    final List<Map<String, dynamic>> maps = await db.query('dogs');
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps.length, (i) {
+      return Dog(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        age: maps[i]['age'],
+      );
+    });
   }
 }
