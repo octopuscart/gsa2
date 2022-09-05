@@ -10,7 +10,7 @@ class Dbconnect {
   //static Database? _database;
 
   Future<Database> initializeDB() async {
-    return await openDatabase('hod17.db', version: 1,
+    return await openDatabase('hod20.db', version: 1,
         onCreate: (Database db, int version) async {
       // When creating the db, create the table
       await db.execute('''CREATE TABLE story_language (
@@ -23,7 +23,7 @@ class Dbconnect {
 
       await db.execute('''CREATE TABLE init_setup (
             id INTEGER PRIMARY KEY,
-            attr_type INTEGER,
+            attr_type CHAR(100),
             attr_value CHAR(100))''');
 
       await db.execute('''CREATE TABLE story_images (
@@ -77,9 +77,9 @@ class Dbconnect {
     return id2;
   }
 
-  Future<List> getDataByQuery(String query) async {
+  Future<List<dynamic>> getDataByQuery(String query) async {
     final Database db = await initializeDB();
-    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    List maps = await db.rawQuery(query);
     if (maps.isEmpty) {
       print("no data");
       return [
@@ -90,8 +90,8 @@ class Dbconnect {
     }
   }
 
-  Future<int> updateTable(
-      String tablename, Map updateList, int primaryKey) async {
+  Future<Map> updateTable(
+      String tablename, Map<String, dynamic> updateList, int primaryKey) async {
     final Database db = await initializeDB();
     List updateListData = [];
     List updateValue = [];
@@ -100,11 +100,42 @@ class Dbconnect {
       updateListData.add(column);
       updateValue.add(value);
     });
-    updateValue.add(primaryKey);
-    String updateString = updateListData.join(", ");
-    String query = 'UPDATE $tablename SET $updateString WHERE id = ?';
+    await db.update(
+      tablename,
+      updateList,
+      where: 'id = ?',
+      whereArgs: [primaryKey],
+    );
+    return updateList;
+  }
+
+  String queryCreator(Map inputlist) {
+    List inputListData = [];
+    inputlist.forEach((key, value) {
+      String column = "$key = ?";
+      inputListData.add(column);
+    });
+    return inputListData.join(", ");
+  }
+
+  Future<void> deleteTableData(String tablename) async {
+    final Database db = await initializeDB();
+    await db.delete(tablename);
+  }
+
+  Future<int> updateTableCondition(
+      String tablename, Map updateList, Map updateConditions) async {
+    final Database db = await initializeDB();
+    String updateString = queryCreator(updateList);
+    String updateConditionString = queryCreator(updateConditions);
+
+    List updatevalues =
+        updateList.values.toList() + updateConditions.values.toList();
+
+    String query =
+        'UPDATE $tablename SET $updateString WHERE $updateConditionString';
     print('updated: $query');
-    int count = await db.rawUpdate(query, updateValue);
+    int count = await db.rawUpdate(query, updatevalues);
     print('updated: $count');
     return count;
   }

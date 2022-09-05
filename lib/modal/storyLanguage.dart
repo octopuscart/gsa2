@@ -1,5 +1,3 @@
-import 'curd.dart';
-
 class StoryLanguage {
   final String? server_id;
   final String title;

@@ -1,36 +1,16 @@
-import 'package:gsa/modal/initSetup.dart';
-
+import 'package:Gospal_Sharing_App/controllers/apiController.dart';
+import 'initSetup.dart';
 import 'curd.dart';
-import 'config.dart';
 import 'storyLanguage.dart';
 import 'storyContent.dart';
 import 'storyImages.dart';
-import 'initSetup.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
 
 class DBSync {
   Dbconnect db = Dbconnect();
+  ApiController apiobj = ApiController();
+
   DBSync() {
     // Dbconnect db = Dbconnect();
-  }
-
-  Future getDataFromServer(url_sufix) async {
-    final http.Response response =
-        await http.get(Uri.parse('$apiendpoint/$url_sufix'));
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      final parsed = jsonDecode(response.body).cast<Map<String, dynamic>>();
-      return (parsed);
-      // List returndata = parsed.map((json) => Type.fromJson(json)).toList();
-      // print(response.body);
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load data');
-    }
   }
 
   Future<int> insertScriptureData(
@@ -57,7 +37,8 @@ class DBSync {
       'title': "Story Language",
       "table_name": "story_language",
     };
-    List story_languageData = await getDataFromServer(story_language["api"]);
+    List story_languageData =
+        await apiobj.getDataFromServer(story_language["api"]);
     List story_languageDataParsed =
         story_languageData.map((json) => StoryLanguage.fromJson(json)).toList();
     return await insertScriptureData(
@@ -70,7 +51,8 @@ class DBSync {
       'title': "Story Images",
       "table_name": "story_images",
     };
-    List story_languageData = await getDataFromServer(story_language["api"]);
+    List story_languageData =
+        await apiobj.getDataFromServer(story_language["api"]);
     List story_languageDataParsed =
         story_languageData.map((json) => StoryImages.fromJson(json)).toList();
     await insertScriptureData(
@@ -84,7 +66,8 @@ class DBSync {
       'title': "Stories",
       "table_name": "story_content",
     };
-    List story_languageData = await getDataFromServer(story_language["api"]);
+    List story_languageData =
+        await apiobj.getDataFromServer(story_language["api"]);
     List story_languageDataParsed =
         story_languageData.map((json) => StoryContent.fromJson(json)).toList();
     await insertScriptureData(
@@ -98,9 +81,9 @@ class DBSync {
       'title': "initialSetup",
       "table_name": "init_setup",
     };
-    List initsetupData = await getDataFromServer(initsetup["api"]);
+    List initsetupData = await apiobj.getDataFromServer(initsetup["api"]);
     List initsetupDataParsed =
-        initsetupData.map((json) => InitSetup.fromJson(json)).toList();
+        initsetupData.map((json) => InitSetupDB.fromJson(json)).toList();
     await insertScriptureData(
         initsetupDataParsed, initsetup["table_name"], 0, callback);
     return 200;
@@ -120,5 +103,10 @@ class DBSync {
   Future getLastInsertedData(String tablename) async {
     return db.getDataByQuery(
         "select id from  $tablename order by id desc limit 0,1");
+  }
+
+  Future getLastDataVersiond() async {
+    return db.getDataByQuery(
+        "select attr_value as id from init_setup where attr_type = 'data_version' order by id desc limit 0,1");
   }
 }

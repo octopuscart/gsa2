@@ -1,5 +1,5 @@
-name: gsa
-description: A new Flutter project.
+name: Gospal_Sharing_App
+description: A Gospal Sharing App project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
@@ -41,6 +41,13 @@ dependencies:
   path_provider: ^2.0.11
   flutter_widget_from_html: ^0.8.5
   cached_network_image: ^3.2.1
+  select_dialog: ^2.0.0
+  custom_floating_action_button: ^0.0.3
+  flutter_windowmanager: ^0.2.0
+  in_app_review: ^2.0.4
+  update_checker: ^0.0.1
+  flutter_launcher_icons: ^0.10.0
+  flutter_native_splash: ^2.2.8
 
 dev_dependencies:
   flutter_test:
@@ -96,3 +103,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  background_image: "assets/splash.png"
+  image: assets/splash.png
